@@ -1,69 +1,41 @@
-# Welcome to your Lovable project
 
-## Project info
+# Modern Coming Soon Page
 
-**URL**: https://lovable.dev/projects/1a3a5959-656d-4933-8dbf-638621c75768
+A minimalist, animated coming soon page built with React, Framer Motion, and GSAP.
 
-## How can I edit this code?
+## Running Locally
 
-There are several ways of editing your application.
+1. Clone the repository
+```bash
+git clone <your-repo-url>
+cd <project-directory>
+```
 
-**Use Lovable**
+2. Install dependencies
+```bash
+npm install
+```
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/1a3a5959-656d-4933-8dbf-638621c75768) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+3. Start the development server
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will start on `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Technologies Used
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
 - React
-- shadcn-ui
+- TypeScript
+- Framer Motion
+- GSAP
 - Tailwind CSS
+- Vite
 
-## How can I deploy this project?
+## Deployment
 
-Simply open [Lovable](https://lovable.dev/projects/1a3a5959-656d-4933-8dbf-638621c75768) and click on Share -> Publish.
+This project can be easily deployed to platforms like Netlify, Vercel, or GitHub Pages.
 
-## I want to use a custom domain - is that possible?
+## Contributing
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+Feel free to open issues and pull requests!

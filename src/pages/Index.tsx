@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
@@ -48,7 +49,7 @@ const Index = () => {
   const text = "Coming soon...";
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0a]">
+    <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#0a0a0a]">
       <StarField />
       <MouseGlow />
       
@@ -101,6 +102,22 @@ const Index = () => {
             ))}
           </motion.p>
         </motion.div>
+      </motion.div>
+
+      <motion.div 
+        className="absolute bottom-8 z-10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 2, duration: 0.8 }}
+      >
+        <a 
+          href="https://www.linkedin.com/in/john-chiwai/" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-white/60 hover:text-white/90 transition-colors duration-300 font-instrument-serif italic text-lg"
+        >
+          Collaboration?
+        </a>
       </motion.div>
 
       <div className="planet-glow" />
