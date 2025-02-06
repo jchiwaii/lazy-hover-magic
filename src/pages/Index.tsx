@@ -27,6 +27,26 @@ const Index = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
   };
 
+  const textVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05
+      }
+    }
+  };
+
+  const letterVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0
+    }
+  };
+
+  const text = "Coming soon...";
+
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0a]">
       <StarField />
@@ -52,7 +72,7 @@ const Index = () => {
         
         <motion.div 
           variants={itemVariants}
-          className="space-y-2 text-lg md:text-xl text-white/60 leading-relaxed tracking-normal"
+          className="space-y-1 text-base md:text-lg text-white/60 leading-relaxed tracking-normal mb-10"
         >
           <p>Converse with your data, uncover insights:</p>
           <p>Our intuitive EDA platform automates</p>
@@ -60,10 +80,26 @@ const Index = () => {
         </motion.div>
         
         <motion.div 
-          variants={itemVariants}
-          className="mt-12"
+          variants={textVariants}
+          initial="hidden"
+          animate="visible"
+          className="mt-8"
         >
-          <p className="font-instrument-sans text-[30px] italic text-white/80">Coming soon...</p>
+          <motion.p className="font-instrument-serif text-[24px] italic text-white/70 tracking-wide">
+            {text.split("").map((char, index) => (
+              <motion.span
+                key={index}
+                variants={letterVariants}
+                transition={{
+                  duration: 0.5,
+                  delay: index * 0.1,
+                  ease: "easeOut"
+                }}
+              >
+                {char}
+              </motion.span>
+            ))}
+          </motion.p>
         </motion.div>
       </motion.div>
 

@@ -19,7 +19,7 @@ const StarField = () => {
     if (!ctx) return;
 
     const stars: Star[] = [];
-    const STAR_COUNT = 150;
+    const STAR_COUNT = 200; // Increased from 150
 
     // Set canvas size
     const setCanvasSize = () => {
@@ -33,9 +33,9 @@ const StarField = () => {
         stars.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          size: Math.random() * 2,
+          size: Math.random() * 2.5, // Increased from 2
           opacity: Math.random(),
-          speed: Math.random() * 0.2,
+          speed: Math.random() * 0.4 + 0.2, // Increased speed range
         });
       }
     };
@@ -46,13 +46,21 @@ const StarField = () => {
 
       stars.forEach((star) => {
         ctx.beginPath();
-        ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+        const gradient = ctx.createRadialGradient(
+          star.x, star.y, 0,
+          star.x, star.y, star.size
+        );
+        gradient.addColorStop(0, `rgba(255, 255, 255, ${star.opacity})`);
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        
+        ctx.fillStyle = gradient;
         ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
         ctx.fill();
 
         star.y += star.speed;
         if (star.y > canvas.height) {
           star.y = 0;
+          star.x = Math.random() * canvas.width;
         }
       });
 
