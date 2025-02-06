@@ -1,30 +1,71 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+import gsap from 'gsap';
 import StarField from '../components/StarField';
 import MouseGlow from '../components/MouseGlow';
 
 const Index = () => {
+  const centerGlowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (centerGlowRef.current) {
+      gsap.to(centerGlowRef.current, {
+        opacity: 1,
+        duration: 2,
+        ease: "power2.out"
+      });
+    }
+  }, []);
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+  };
+
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0a]">
       <StarField />
       <MouseGlow />
       
-      <div className="relative z-10 text-center px-4">
-        <h1 className="opacity-0 animate-fade-up [animation-delay:300ms] text-4xl md:text-6xl lg:text-7xl font-light mb-6 tracking-tight">
-          Turn your <span className="font-normal italic">data</span> into
+      <div ref={centerGlowRef} className="absolute inset-0 animate-center-glow" />
+      
+      <motion.div 
+        className="relative z-10 text-center px-4"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.h1 
+          variants={itemVariants}
+          className="text-4xl md:text-6xl lg:text-7xl font-medium tracking-tight leading-tight mb-8"
+        >
+          Turn your <span className="font-instrument-serif italic font-normal">data</span> into
           <br />
-          <span className="font-normal italic">insights</span><span className="text-white/80">.</span>
-        </h1>
+          <span className="font-instrument-serif italic font-normal">insights</span>
+          <span className="text-white/80">.</span>
+        </motion.h1>
         
-        <div className="opacity-0 animate-fade-up [animation-delay:600ms] space-y-4 text-lg md:text-xl text-white/60">
+        <motion.div 
+          variants={itemVariants}
+          className="space-y-2 text-lg md:text-xl text-white/60 leading-relaxed tracking-normal"
+        >
           <p>Converse with your data, uncover insights:</p>
           <p>Our intuitive EDA platform automates</p>
           <p>exploratory analysis.</p>
-        </div>
+        </motion.div>
         
-        <div className="opacity-0 animate-fade-up [animation-delay:900ms] mt-12">
-          <p className="text-2xl md:text-3xl font-light italic text-white/80">Coming soon...</p>
-        </div>
-      </div>
+        <motion.div 
+          variants={itemVariants}
+          className="mt-12"
+        >
+          <p className="font-instrument-sans text-[30px] italic text-white/80">Coming soon...</p>
+        </motion.div>
+      </motion.div>
 
       <div className="planet-glow" />
     </div>

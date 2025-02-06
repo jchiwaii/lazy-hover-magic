@@ -18,6 +18,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        'instrument-serif': ['"Instrument Serif"', 'serif'],
+        'instrument-sans': ['"Instrument Sans"', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -65,11 +69,22 @@ export default {
             transform: "translateY(-10px)",
           },
         },
+        "center-glow": {
+          "0%": {
+            opacity: "0",
+            background: "radial-gradient(circle at center, rgba(255,255,255,0.05) 0%, transparent 70%)",
+          },
+          "100%": {
+            opacity: "1",
+            background: "radial-gradient(circle at center, rgba(255,255,255,0.15) 0%, transparent 70%)",
+          },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.8s ease-out forwards",
         "fade-in": "fade-in 1s ease-out forwards",
         float: "float 6s ease-in-out infinite",
+        "center-glow": "center-glow 2s ease-out forwards",
       },
     },
   },
