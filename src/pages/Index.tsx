@@ -64,9 +64,9 @@ const Index = () => {
           variants={itemVariants}
           className="text-4xl md:text-6xl lg:text-7xl font-medium tracking-tight leading-tight mb-8"
         >
-          Turn your <span className="font-instrument-serif italic font-normal text-blue/60">data</span> into
+          Turn your <span className="font-instrument-serif italic font-normal text-sky-400/80">data</span> into
           <br />
-          <span className="font-instrument-serif italic font-normal text-blue/60">insights</span>
+          <span className="font-instrument-serif italic font-normal text-sky-400/80">insights</span>
           <span className="text-white/80">.</span>
         </motion.h1>
         
