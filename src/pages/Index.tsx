@@ -74,8 +74,8 @@ const Index = () => {
           variants={itemVariants}
           className="space-y-1 text-base md:text-lg text-white/60 leading-relaxed tracking-normal mb-10"
         >
-          <p>Unlock the power of your data through natural conversation.</p>
-          <p>Our automated Exploratory Data Analysis solution does the heavy lifting.</p>
+          <p>Unlock the power of your data through natural conversations.</p>
+          <p>We do the heavy lifting.</p>
           <p>Just for you.</p>
         </motion.div>
         
