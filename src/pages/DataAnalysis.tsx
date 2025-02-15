@@ -16,10 +16,11 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell
+  Cell,
+  ScatterPlot
 } from 'recharts';
 
-interface DataPreview {
+interface DataAnalysisResponse {
   columnStats: {
     [key: string]: {
       type: string;
@@ -29,128 +30,60 @@ interface DataPreview {
       median?: number;
       min?: number;
       max?: number;
+      skewness?: number;
+      kurtosis?: number;
+      correlations?: { [key: string]: number };
     };
   };
-  sampleData: any[];
   visualizations: {
     [key: string]: {
       type: string;
       data: any[];
+      options?: any;
     };
   };
+  insights: string[];
 }
 
 const DataAnalysis = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [dataPreview, setDataPreview] = useState<DataPreview | null>(null);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { 
-        duration: 0.8,
-        staggerChildren: 0.2 
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.5 }
-    }
-  };
+  const [analysisResults, setAnalysisResults] = useState<DataAnalysisResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) return;
 
     try {
-      // For now, we'll just read CSV files
-      if (selectedFile.type !== 'text/csv') {
-        toast({
-          title: "Invalid file type",
-          description: "Please upload a CSV file",
-          variant: "destructive",
-        });
-        return;
+      setIsLoading(true);
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+
+      const response = await fetch('http://localhost:8000/analyze', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Analysis failed');
       }
 
-      const text = await selectedFile.text();
-      const rows = text.split('\n');
-      const headers = rows[0].split(',');
-      const data = rows.slice(1).map(row => {
-        const values = row.split(',');
-        const rowData: { [key: string]: any } = {};
-        headers.forEach((header, index) => {
-          rowData[header.trim()] = values[index]?.trim();
-        });
-        return rowData;
-      });
-
-      // Calculate basic statistics
-      const columnStats: DataPreview['columnStats'] = {};
-      headers.forEach(header => {
-        const values = data.map(row => row[header]).filter(Boolean);
-        const numericValues = values.map(Number).filter(n => !isNaN(n));
-        
-        columnStats[header] = {
-          type: numericValues.length === values.length ? 'numeric' : 'categorical',
-          nullCount: data.length - values.length,
-          uniqueCount: new Set(values).size,
-          ...(numericValues.length === values.length && {
-            mean: numericValues.reduce((a, b) => a + b, 0) / numericValues.length,
-            median: numericValues.sort((a, b) => a - b)[Math.floor(numericValues.length / 2)],
-            min: Math.min(...numericValues),
-            max: Math.max(...numericValues),
-          }),
-        };
-      });
-
-      // Generate visualizations
-      const visualizations: DataPreview['visualizations'] = {};
-      headers.forEach(header => {
-        if (columnStats[header].type === 'categorical') {
-          const counts: { [key: string]: number } = {};
-          data.forEach(row => {
-            const value = row[header];
-            counts[value] = (counts[value] || 0) + 1;
-          });
-          visualizations[header] = {
-            type: 'pie',
-            data: Object.entries(counts).map(([name, value]) => ({ name, value })),
-          };
-        } else {
-          // For numeric columns, create histogram-like bar chart
-          visualizations[header] = {
-            type: 'bar',
-            data: data.map(row => ({
-              value: Number(row[header]),
-            })),
-          };
-        }
-      });
-
+      const results = await response.json();
+      setAnalysisResults(results);
       setFile(selectedFile);
-      setDataPreview({
-        columnStats,
-        sampleData: data.slice(0, 5),
-        visualizations,
-      });
 
       toast({
-        title: "File uploaded",
-        description: `${selectedFile.name} has been processed successfully.`,
+        title: "Analysis Complete",
+        description: "Your data has been analyzed successfully.",
       });
     } catch (error) {
       toast({
-        title: "Error processing file",
-        description: "There was an error processing your file. Please try again.",
+        title: "Error",
+        description: "There was an error analyzing your data. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -161,44 +94,38 @@ const DataAnalysis = () => {
       
       <motion.div 
         className="container mx-auto px-4 py-8 relative z-10"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
       >
-        <motion.div 
-          variants={itemVariants}
-          className="flex flex-col gap-8"
-        >
-          {/* File Upload Section */}
-          <motion.div 
-            variants={itemVariants}
-            className="bg-white/5 p-6 rounded-lg backdrop-blur-sm"
-          >
-            <h2 className="text-2xl font-montserrat font-light mb-4">Upload Your Data</h2>
-            <Input
-              type="file"
-              accept=".csv"
-              onChange={handleFileUpload}
-              className="bg-white/10 border-white/20"
-            />
-            {file && (
-              <p className="mt-2 text-sm text-white/60">
-                File loaded: {file.name}
-              </p>
-            )}
-          </motion.div>
+        {/* File Upload Section */}
+        <div className="bg-white/5 p-6 rounded-lg backdrop-blur-sm mb-8">
+          <h2 className="text-2xl font-montserrat font-light mb-4">Upload Your Data</h2>
+          <Input
+            type="file"
+            accept=".csv,.xlsx"
+            onChange={handleFileUpload}
+            className="bg-white/10 border-white/20"
+            disabled={isLoading}
+          />
+          {isLoading && (
+            <p className="mt-2 text-sm text-white/60">Analyzing your data...</p>
+          )}
+          {file && !isLoading && (
+            <p className="mt-2 text-sm text-white/60">
+              Analyzing: {file.name}
+            </p>
+          )}
+        </div>
 
-          {/* Data Preview and EDA */}
-          {dataPreview && (
-            <motion.div 
-              variants={itemVariants}
-              className="bg-white/5 p-6 rounded-lg backdrop-blur-sm"
-            >
-              <h2 className="text-2xl font-montserrat font-light mb-6">Data Analysis</h2>
-              
-              {/* Column Statistics */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                {Object.entries(dataPreview.columnStats).map(([column, stats]) => (
+        {/* Analysis Results */}
+        {analysisResults && (
+          <div className="space-y-8">
+            {/* Column Statistics */}
+            <div className="bg-white/5 p-6 rounded-lg backdrop-blur-sm">
+              <h2 className="text-2xl font-montserrat font-light mb-6">Column Analysis</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Object.entries(analysisResults.columnStats).map(([column, stats]) => (
                   <div key={column} className="bg-white/5 p-4 rounded-lg">
                     <h3 className="text-lg font-montserrat mb-2">{column}</h3>
                     <div className="text-sm text-white/70 space-y-1">
@@ -210,18 +137,23 @@ const DataAnalysis = () => {
                           <p>Mean: {stats.mean?.toFixed(2)}</p>
                           <p>Median: {stats.median?.toFixed(2)}</p>
                           <p>Range: {stats.min?.toFixed(2)} - {stats.max?.toFixed(2)}</p>
+                          {stats.skewness && <p>Skewness: {stats.skewness.toFixed(2)}</p>}
+                          {stats.kurtosis && <p>Kurtosis: {stats.kurtosis.toFixed(2)}</p>}
                         </>
                       )}
                     </div>
                   </div>
                 ))}
               </div>
+            </div>
 
-              {/* Visualizations */}
+            {/* Visualizations */}
+            <div className="bg-white/5 p-6 rounded-lg backdrop-blur-sm">
+              <h2 className="text-2xl font-montserrat font-light mb-6">Visualizations</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {Object.entries(dataPreview.visualizations).map(([column, viz]) => (
-                  <div key={column} className="bg-white/5 p-4 rounded-lg h-[300px]">
-                    <h3 className="text-lg font-montserrat mb-4">{column}</h3>
+                {Object.entries(analysisResults.visualizations).map(([key, viz]) => (
+                  <div key={key} className="bg-white/5 p-4 rounded-lg h-[300px]">
+                    <h3 className="text-lg font-montserrat mb-4">{key}</h3>
                     <ResponsiveContainer width="100%" height="100%">
                       {viz.type === 'pie' ? (
                         <PieChart>
@@ -233,7 +165,7 @@ const DataAnalysis = () => {
                             cy="50%"
                             outerRadius={80}
                           >
-                            {viz.data.map((entry, index) => (
+                            {viz.data.map((entry: any, index: number) => (
                               <Cell key={`cell-${index}`} fill={`hsl(${index * 45}, 70%, 60%)`} />
                             ))}
                           </Pie>
@@ -242,7 +174,7 @@ const DataAnalysis = () => {
                       ) : (
                         <BarChart data={viz.data}>
                           <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis />
+                          <XAxis dataKey="name" />
                           <YAxis />
                           <Tooltip />
                           <Bar dataKey="value" fill="#8884d8" />
@@ -252,9 +184,21 @@ const DataAnalysis = () => {
                   </div>
                 ))}
               </div>
-            </motion.div>
-          )}
-        </motion.div>
+            </div>
+
+            {/* Insights */}
+            {analysisResults.insights.length > 0 && (
+              <div className="bg-white/5 p-6 rounded-lg backdrop-blur-sm">
+                <h2 className="text-2xl font-montserrat font-light mb-6">Key Insights</h2>
+                <ul className="space-y-2">
+                  {analysisResults.insights.map((insight, index) => (
+                    <li key={index} className="text-white/70">{insight}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
       </motion.div>
     </div>
   );
