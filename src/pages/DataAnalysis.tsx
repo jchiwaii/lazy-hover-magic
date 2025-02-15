@@ -17,7 +17,9 @@ import {
   PieChart,
   Pie,
   Cell,
-  ScatterPlot
+  ScatterChart,
+  Scatter,
+  ZAxis
 } from 'recharts';
 
 interface DataAnalysisResponse {
